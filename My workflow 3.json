@@ -1,0 +1,106 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "47a907f2-1d93-48e0-9bef-c8ee57669c48",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4e265532-215a-428d-afc3-3f9433638008",
+      "name": "Webhook",
+      "webhookId": "47a907f2-1d93-48e0-9bef-c8ee57669c48"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.virustotal.com/api/v3/domains/{{$(\"Webhook\").item.json.body.data.fields[1].value}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apikey",
+              "value": "23835d0edb3d8b5a191d69d10322555ebca1e6bcc87f5695efbcf4c2ffcb861f"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a0ab4be4-ea91-4dbe-82a2-1041440b9406",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$(\"Webhook\").item.json.body.data.fields[0].value}}",
+        "subject": "Domain Safety Check Result",
+        "emailType": "text",
+        "message": "=Domain Check Result:\n\nDomain: {{$(\"Webhook\").item.json.body.data.fields[1].value}}\n\nResult: {{$(\"HTTP Request\").item.json.data.attributes.last_analysis_stats.harmless}} engines found it harmless.\nMalicious: {{$(\"HTTP Request\").item.json.data.attributes.last_analysis_stats.malicious}} engines flagged it.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "4c016443-036f-46cf-8dcd-584c1a15af3f",
+      "name": "Send a message",
+      "webhookId": "2cff0cb9-9867-4cf1-968d-366bade486ef",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "7xWaoKBgydD3Z8cI",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5f3f5281-af38-4f34-9eb9-5f2cbc12ab9c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6037157821513cd5cff1553608bd704e4be7c04b1a83b66df4f2b34b08fae371"
+  },
+  "nodeGroups": [],
+  "id": "QsyD1XSaLHou5Hov",
+  "tags": []
+}
